@@ -32,6 +32,7 @@ package nextapp.echo.filetransfer.testapp.testscreen;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Random;
+
 import nextapp.echo.app.Border;
 import nextapp.echo.app.Color;
 import nextapp.echo.app.Column;
@@ -172,6 +173,12 @@ public class MultipleUploadSelectTest extends SplitPane {
             }
         });
         uploadSelect.addUploadListener(new UploadListener() {
+        	
+        	@Override
+        	public void uploadFailed(Exception ex) {
+        		// TODO Auto-generated method stub
+        		
+        	}
         
             public void uploadComplete(UploadEvent e) {
                 Upload upload = e.getUpload();

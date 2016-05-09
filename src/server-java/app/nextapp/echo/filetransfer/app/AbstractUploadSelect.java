@@ -74,6 +74,10 @@ public abstract class AbstractUploadSelect extends Component {
         public void uploadStart(UploadProcessEvent e) {
             doUploadStart(e.getUpload());
         }
+
+        public void uploadFail(UploadProcessEvent e, Exception ex) {
+            doUploadFailed(ex);
+        }
     };
     
     private UploadProcess uploadProcess;
@@ -182,7 +186,14 @@ public abstract class AbstractUploadSelect extends Component {
             ((UploadProgressListener) listeners[i]).uploadStart(e);
         }
     }
-    
+
+    public void doUploadFailed(Exception ex) {
+        EventListener[] listeners = getEventListenerList().getListeners(UploadListener.class);
+        for (int i = 0; i < listeners.length; ++i){
+            ((UploadListener) listeners[i]).uploadFailed(ex);
+        }
+    }
+
     /**
      * Determines if any <code>UploadListener</code>s are currently registered.
      * 

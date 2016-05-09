@@ -43,12 +43,18 @@ public interface UploadListener extends EventListener  {
      * 
      * @param e the <code>UploadEvent</code> describing the upload
      */
-    public void uploadComplete(UploadEvent e);
+    void uploadComplete(UploadEvent e);
 
     /**
      * Invoked to indicate the start of a file upload.
      * This method will be invoked by a user interface thread, enabling the user interface state to
      * be changed as a result.
      */
-    public void uploadSend();
+    void uploadSend();
+    
+    /**
+     * Invoked when an upload fails with the exception that caused the failure.
+     * @param ex
+     */
+    void uploadFailed(Exception ex);
 }

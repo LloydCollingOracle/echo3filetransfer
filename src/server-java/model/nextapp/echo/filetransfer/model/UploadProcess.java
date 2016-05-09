@@ -277,6 +277,20 @@ public class UploadProcess {
         }
     }
     
+    public void fail(Exception ex) {
+//    	System.out.println("UploadProcess.fail Upload failed, see following stack trace");
+//    	ex.printStackTrace();
+        if (listeners == null) {
+            return;
+        }
+        UploadProcessEvent e = new UploadProcessEvent(this, null);
+        UploadProcessListener[] listenerArray = new UploadProcessListener[listeners.size()];
+        listeners.toArray(listenerArray);
+        for (int i = 0; i < listenerArray.length; ++i) {
+            listenerArray[i].uploadFail(e, ex);
+        }
+    }
+
     /**
      * Completes an individual {@link Upload}.
      * The specified {@link InputStream} and size information will be stored in the {@link Upload}.
@@ -286,13 +300,16 @@ public class UploadProcess {
      * @param size the length of the data, in bytes
      */
     public void complete(Upload upload, InputStream in, long size) {
+//    	System.out.println("UploadProcess.complete upload with file name " + upload.getFileName() + " completed with size " + size);
         ((UploadImpl) upload).setSize(size);
         if (upload.getStatus() == Upload.STATUS_IN_PROGRESS) {
+//        	System.out.println("UploadProcess.complete notifying upload completion");
             ((UploadImpl) upload).setInputStream(in);
             notifyComplete(upload);
         } else {
             if (in != null) {
                 try {
+//                	System.out.println("UploadProcess.complete upload status is not 'in progress', it was: " + upload.getStatus() + "; 0=In progress, 1=Complete, 2=Canceled, 3=IO Error, 4=Oversize");
                     in.close();
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
@@ -310,10 +327,14 @@ public class UploadProcess {
      * @param size the length of the data, in bytes
      */
     public void complete(Upload upload, File file, long size) {
+//    	System.out.println("UploadProcess.complete upload with file name " + upload.getFileName() + " completed with size " + size);
         ((UploadImpl) upload).setSize(size);
         if (upload.getStatus() == Upload.STATUS_IN_PROGRESS) {
+//        	System.out.println("UploadProcess.complete notifying upload completion");
             ((UploadImpl) upload).setFile(file);
             notifyComplete(upload);
+        } else {
+//        	System.out.println("UploadProcess.complete upload status is not 'in progress', it was: " + upload.getStatus() + "; 0=In progress, 1=Complete, 2=Canceled, 3=IO Error, 4=Oversize");
         }
     }
     
@@ -397,6 +418,11 @@ public class UploadProcess {
         }
         return uploads;
     }
+
+	public boolean hasUploads() {
+        getUploads();
+		return uploads.length > 0;
+	}
     
     /**
      * Initializes the <code>UploadState</code> state object.
@@ -430,7 +456,13 @@ public class UploadProcess {
      */
     public synchronized boolean isComplete() {
         getUploads();
+//        System.out.println("UploadProcess.isComplete uploads length is " + uploads.length);
+        if (uploads.length == 0) {
+//            System.out.println("UploadProcess.isComplete returning false as there are no uploads");
+            return false;
+        }
         for (int i = 0; i < uploads.length; ++i) {
+//        	System.out.println("UploadProcess.isComplete upload " + i + " has status " + uploads[i].getStatus() + "; 0=In progress, 1=Complete, 2=Canceled, 3=IO Error, 4=Oversize");
             if (uploads[i].getStatus() == Upload.STATUS_IN_PROGRESS) {
                 return false;
             }
@@ -504,10 +536,14 @@ public class UploadProcess {
      * @param status the new status
      */
     public synchronized void setStatus(int status) {
+//        System.out.println("UploadProcess.setStatus: " + status);
         Upload[] uploads = getUploads();
         for (int i = 0; i < uploads.length; ++i) {
             if (uploads[i].getStatus() == Upload.STATUS_IN_PROGRESS) {
+//                System.out.println("UploadProcess.setStatus applying status to upload: " + uploads[i]);
                 ((UploadImpl) uploads[i]).setStatus(status);
+            } else {
+//                System.out.println("UploadProcess.setStatus *not* applying status to upload: " + uploads[i]);
             }
         }
     }
@@ -521,6 +557,7 @@ public class UploadProcess {
         if (listeners == null) {
             return;
         }
+//        System.out.println("UploadProcess.start with upload: " + upload.toString());
         UploadProcessEvent e = new UploadProcessEvent(this, upload);
         UploadProcessListener[] listenerArray = new UploadProcessListener[listeners.size()];
         listeners.toArray(listenerArray);

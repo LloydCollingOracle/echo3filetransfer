@@ -14,7 +14,6 @@
  */
 
 
-
 /* ******************* */
 /* Constructor & Init  */
 /* ******************* */
@@ -36,6 +35,7 @@ SWFUpload.prototype.initSWFUpload = function (userSettings) {
 		this.movieName = "SWFUpload_" + SWFUpload.movieCount++;
 		this.movieElement = null;
 
+Core.Debug.consoleWrite("|oo| SWF Upload init");
 
 		// Setup global control tracking
 		SWFUpload.instances[this.movieName] = this;

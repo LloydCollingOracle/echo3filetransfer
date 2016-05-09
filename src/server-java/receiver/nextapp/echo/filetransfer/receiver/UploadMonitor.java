@@ -57,21 +57,29 @@ public class UploadMonitor {
     public static String processRequest(HttpServletRequest request) 
     throws IOException {
         String processId = request.getParameter("pid");
+//        System.out.println("UploadMonitor.processRequest pid is " + processId);
         UploadProcess uploadProcess = UploadProcessManager.get(request, processId, false);
-        if (uploadProcess == null) {
+        if (uploadProcess == null || !uploadProcess.hasUploads()) {
+//        	System.out.println("UploadMonitor.processRequest pid is unknown");
             return createResponse("<s v=\"unknownpid\"/>");
         }
         String command = request.getParameter("command");
+//        System.out.println("UploadMonitor.processRequest command is " + command);
         if ("cancel".equals(command)) {
             uploadProcess.cancel();
         }
         
         if (uploadProcess.isCanceled()) {
+//        	System.out.println("UploadMonitor.processRequest process is cancelled");
             return createResponse("<s v=\"cancel\"/>");
         } else if (uploadProcess.isComplete()) {
+//        	System.out.println("UploadMonitor.processRequest process is complete");
             return createResponse("<s v=\"complete\"/>");
         } else {
-            return createResponse("<s p=\"" + uploadProcess.getProgress() + "/" + uploadProcess.getSize() + "\"/>");        
+        	long progress = uploadProcess.getProgress();
+        	long size = uploadProcess.getSize();
+//        	System.out.println("UploadMonitor.processRequest process is in progress, sending progress " + progress + " and size " + size);
+            return createResponse("<s p=\"" + progress + "/" + size + "\"/>");        
         }
     }
     

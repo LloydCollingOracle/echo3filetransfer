@@ -170,6 +170,12 @@ public class UploadSelectTest extends SplitPane {
             }
         });
         uploadSelect.addUploadListener(new UploadListener() {
+        	
+        	@Override
+        	public void uploadFailed(Exception ex) {
+        		// TODO Auto-generated method stub
+        		
+        	}
 
             public void uploadComplete(UploadEvent e) {
                 try {

@@ -46,7 +46,9 @@ FileTransfer.Sync.AbstractUploadSelect = Core.extend(Echo.Render.ComponentSync, 
      * Constructor.
      */
     $construct: function() {
+    	Core.Debug.consoleWrite("FU Sync.AbstractUploadSelect.construct enter");
         this._componentListener = Core.method(this, function(e) {
+
             switch (e.type) {
             case "uploadCancel":
                 this.uploadRender.cancel();
@@ -56,6 +58,7 @@ FileTransfer.Sync.AbstractUploadSelect = Core.extend(Echo.Render.ComponentSync, 
                 break;
             }
         });
+    	Core.Debug.consoleWrite("FU Sync.AbstractUploadSelect.construct exit");
     },
     
     /**
@@ -64,6 +67,7 @@ FileTransfer.Sync.AbstractUploadSelect = Core.extend(Echo.Render.ComponentSync, 
      * @see Echo.Render.ComponentSync#renderAdd 
      */
     renderAdd: function(update, parentElement) {
+    	Core.Debug.consoleWrite("FU Sync.AbstractUploadSelect.renderAdd enter");
         this.component.addListener("uploadCancel", this._componentListener);
         this.component.addListener("uploadSend", this._componentListener);
         this.urlParameters = [];
@@ -83,6 +87,7 @@ FileTransfer.Sync.AbstractUploadSelect = Core.extend(Echo.Render.ComponentSync, 
         this.div.id = this.component.renderId;
         this.uploadRender.add();
         parentElement.appendChild(this.div);
+    	Core.Debug.consoleWrite("FU Sync.AbstractUploadSelect.renderAdd exit");
     },
 
     /** 
@@ -91,9 +96,11 @@ FileTransfer.Sync.AbstractUploadSelect = Core.extend(Echo.Render.ComponentSync, 
      * @see Echo.Render.ComponentSync#renderDisplay 
      */
     renderDisplay: function() {
+    	Core.Debug.consoleWrite("FU Sync.AbstractUploadSelect.renderDisplay enter");
         if (this.uploadRender.display) {
             this.uploadRender.display();
         }
+    	Core.Debug.consoleWrite("FU Sync.AbstractUploadSelect.renderDisplay exit");
     },
     
     /**
@@ -102,6 +109,7 @@ FileTransfer.Sync.AbstractUploadSelect = Core.extend(Echo.Render.ComponentSync, 
      * @see Echo.Render.ComponentSync#renderDispose 
      */
     renderDispose: function(update) {
+    	Core.Debug.consoleWrite("FU Sync.AbstractUploadSelect.renderDispose enter");
         this.component.removeListener("uploadCancel", this._componentListener);
         this.component.removeListener("uploadSend", this._componentListener);
         if (this.progressDisplay) {
@@ -114,6 +122,7 @@ FileTransfer.Sync.AbstractUploadSelect = Core.extend(Echo.Render.ComponentSync, 
         this.div = null;
         this.uploadRender.peer = null;
         this.uploadRender = null;
+    	Core.Debug.consoleWrite("FU Sync.AbstractUploadSelect.renderDispose exit");
     },
     
     /**
@@ -122,11 +131,13 @@ FileTransfer.Sync.AbstractUploadSelect = Core.extend(Echo.Render.ComponentSync, 
      * @see Echo.Render.ComponentSync#renderUpdate 
      */
     renderUpdate: function(update) {
+    	Core.Debug.consoleWrite("FU Sync.AbstractUploadSelect.renderUpdate enter");
         var element = this.div;
         var containerElement = element.parentNode;
         Echo.Render.renderComponentDispose(update, update.parent);
         containerElement.removeChild(element);
         this.renderAdd(update, containerElement);
+    	Core.Debug.consoleWrite("FU Sync.AbstractUploadSelect.renderUpdate exit");
         return true;
     },
     
@@ -134,9 +145,11 @@ FileTransfer.Sync.AbstractUploadSelect = Core.extend(Echo.Render.ComponentSync, 
      * Notifies the <code>FileTransfer.Sync.UploadRender</code> to send the file.
      */
     send: function() {
+    	Core.Debug.consoleWrite("FU Sync.AbstractUploadSelect.send enter");
         this.progressDisplay = FileTransfer.Sync.ProgressDisplay.instantiate(this.component);
         this.progressDisplay.create(this.div);
         this.uploadRender.send();
+    	Core.Debug.consoleWrite("FU Sync.AbstractUploadSelect.send exit");
     }
 });
 
@@ -269,7 +282,7 @@ FileTransfer.Sync.DefaultUploadRender = Core.extend(FileTransfer.Sync.UploadRend
         this._form.style.padding = 0;
         this._form.style.margin = 0;
         this.peer.div.appendChild(this._form);
-        
+
         this._fileInput = document.createElement("input");
         this._fileInput.type = "file";
         this._fileInput.name = this.peer.component.renderId;
@@ -285,22 +298,28 @@ FileTransfer.Sync.DefaultUploadRender = Core.extend(FileTransfer.Sync.UploadRend
         
         Core.Web.Event.add(this._fileInput, "change", Core.method(this, function() {
             if (!this._fileInput.value) {
+            	Core.Debug.consoleWrite("FU Sync.DefaultUploadRender.add exit (!this._fileInput.value)");
                 return false;
             }
             this.peer.component.ready();
         }), false);
+    	Core.Debug.consoleWrite("FU Sync.DefaultUploadRender.add exit");
     },
     
     /** @see FileTransfer.Sync.UploadRender#cancel */
     cancel: function() {
+    	Core.Debug.consoleWrite("FU Sync.DefaultUploadRender.cancel enter");
         this._monitor.cancel = true;
+    	Core.Debug.consoleWrite("FU Sync.DefaultUploadRender.cancel exit");
     },
     
     /** @see FileTransfer.Sync.UploadRender#dispose */
     dispose: function() {
+    	Core.Debug.consoleWrite("FU Sync.DefaultUploadRender.dispose enter");
         Core.Web.Event.removeAll(this._fileInput);
         this._form = null;
         this._fileInput = null;
+    	Core.Debug.consoleWrite("FU Sync.DefaultUploadRender.dispose exit");
     },
     
     /**
@@ -311,11 +330,14 @@ FileTransfer.Sync.DefaultUploadRender = Core.extend(FileTransfer.Sync.UploadRend
      * @type Boolean
      */
     _progress: function(status) {
+    	Core.Debug.consoleWrite("FU Sync.DefaultUploadRender._progress enter");
         if (this.disposed) {
+        	Core.Debug.consoleWrite("FU Sync.DefaultUploadRender._progress exit (this.disposed)");
             return false;
         } else if (status.complete) {
             this.peer.progressDisplay.complete();
             this.peer.component.complete();
+        	Core.Debug.consoleWrite("FU Sync.DefaultUploadRender._progress exit (status.complete)");
             return false;
         } else if (status.progress != null) {
             if (!this.peer.progressDisplay.initialized) {
@@ -325,31 +347,46 @@ FileTransfer.Sync.DefaultUploadRender = Core.extend(FileTransfer.Sync.UploadRend
             }
             this._progressFile.progress = status.progress;
             this.peer.progressDisplay.update();
+        	Core.Debug.consoleWrite("FU Sync.DefaultUploadRender._progress exit (status.progress != null)");
             return true;
         } else if (status.unknownPid) {
+	    Core.Debug.consoleWrite("FU _progress function status is unknownPid");
+
             // Server hasn't received POST yet.
             if (!this._started) {
+		Core.Debug.consoleWrite("FU progress : not started even tho it should have.  Calling start");
+
                 // Start upload if it is not yet started.
                 // This is performed here due to bug in Safari which only appears to manifest on 64-bit machines
                 // in somewhat unusual and difficult to test conditions.
                 this._start();
             }
+        	Core.Debug.consoleWrite("FU Sync.DefaultUploadRender._progress exit (!this._started)");
             return true;
         }
+    	Core.Debug.consoleWrite("FU Sync.DefaultUploadRender._progress exit");
     },
     
     /** @see FileTransfer.Sync.UploadRender#send */
     send: function() {
+	Core.Debug.consoleWrite("FU Sync.DefaultUploadRender.send enter");
         this._fileInput.style.display = "none";
         var url = this.peer.component.get("monitor") || this.peer.component.get("receiver");
         url += (url.indexOf("?") == -1 ? "?" : "&") + this.peer.urlParameters.join("&");
+        
+    	Core.Debug.consoleWrite("FU DefaultUploadRender.send url = " + url);
+    	
         this._monitor = new FileTransfer.Sync.Monitor(url, Core.method(this, this._progress));
         this._monitor.start();
+    	Core.Debug.consoleWrite("FU Sync.DefaultUploadRender.send exit");
     },
     
     _start: function() {
+	Core.Debug.consoleWrite("FU Sync.DefaultUploadRender.start enter");
+
         this._started = true;
         this._form.submit();
+    	Core.Debug.consoleWrite("FU Sync.DefaultUploadRender.start exit");
     }
 });
 
@@ -359,7 +396,9 @@ FileTransfer.Sync.DefaultUploadRender = Core.extend(FileTransfer.Sync.UploadRend
 FileTransfer.Sync.UploadSelect = Core.extend(FileTransfer.Sync.AbstractUploadSelect, {
 
     $load: function() {
+    	Core.Debug.consoleWrite("FU Sync.DefaultUploadRender.$load enter");
         Echo.Render.registerPeer("FileTransfer.UploadSelect", this);
+    	Core.Debug.consoleWrite("FU Sync.DefaultUploadRender.$load exit");
     }
 });
 
@@ -400,15 +439,20 @@ FileTransfer.Sync.Monitor = Core.extend(Core.Web.Scheduler.Runnable, {
      * @param {Function} onProgress method to invoke with progress status updates 
      */
     $construct: function(monitorUrl, onProgress) {
+    	Core.Debug.consoleWrite("FU Sync.Monitor.construct enter");
+	    Core.Debug.consoleWrite("FU monitor construction for " + monitorUrl);
         this._monitorUrl = monitorUrl;
         this._onProgress = onProgress;
+    	Core.Debug.consoleWrite("FU Sync.Monitor.construct exit");
     },
     
     /**
      * Starts the progress monitor.
      */
     start: function() {
+	    Core.Debug.consoleWrite("FU Sync.Monitor.start enter");
         Core.Web.Scheduler.add(this);
+    	Core.Debug.consoleWrite("FU Sync.Monitor.start exit");
     },
     
     /** 
@@ -417,50 +461,87 @@ FileTransfer.Sync.Monitor = Core.extend(Core.Web.Scheduler.Runnable, {
      * @param e the <code>HttpConnection</code> response event
      */
     _processResponse: function(e) {
+    	Core.Debug.consoleWrite("FU Sync.Monitor._processResponse enter");
         var status = {},
             dom,
             s, p, v;
 
+	Core.Debug.consoleWrite("FU processing response with getStatus: " + e.source.getStatus());
         if (e.source.getStatus() != 200) {
+        	Core.Debug.consoleWrite("FU Sync.Monitor.run exit (e.source.getStatus() != 200)");
             return;
         }
 
+/*
+Causes crashes in Firefox/IE
+	Core.Debug.consoleWrite("FU e is : " + e);
+	for (var i in e) {
+	    Core.Debug.consoleWrite("FU e, " + i + " = " + e[i]);
+	}
+
+	Core.Debug.consoleWrite("FU e.source is : " + e.source);
+	for (var i in e.source) {
+	    Core.Debug.consoleWrite("FU eSource, " + i + " = " + e.source[i]);
+	}
+
+	Core.Debug.consoleWrite("FU e.source._xmlHttpRequest is : " + e.source._xmlHttpRequest);
+	for (var i in e.source._xmlHttpRequest) {
+	    Core.Debug.consoleWrite("FU eSource._xmlHttpRequest, " + i + " = " + e.source._xmlHttpRequest[i]);
+	}
+*/
+	
         s = e.source.getResponseXml().documentElement.getElementsByTagName("s")[0];
+	if ((s !=null) && (s != undefined)) {
+		Core.Debug.consoleWrite("FU processing reponse with tag name: " + s.tagName);
         
-        p = s.getAttribute("p"); // Progress
-        if (p) {
-            var data = p.split("/");
-            status.progress = parseInt(data[0], 10);
-            status.size = parseInt(data[1], 10);
-        } else {
-            v = s.getAttribute("v"); // Value
-            switch (v) {
-            case "complete":
-                status.complete = true;
-                break;
-            case "cancel":
-                status.cancel = true;
-                break;
-            case "unknownpid":
-                status.unknownPid = true;
-                break;
-            }
-        }
-        
-        if (this._onProgress(status)) {
-            Core.Web.Scheduler.add(this);
-        }
+	        p = s.getAttribute("p"); // Progress
+		Core.Debug.consoleWrite("FU processing reponse with progress: " + p);
+	        if (p) {
+	            var data = p.split("/");
+	            status.progress = parseInt(data[0], 10);
+	            status.size = parseInt(data[1], 10);
+	        } else {
+	            v = s.getAttribute("v"); // Value
+	            Core.Debug.consoleWrite("FU processing reponse with value: " + v);
+	            switch (v) {
+	            case "complete":
+	                status.complete = true;
+	                break;
+	            case "cancel":
+	                status.cancel = true;
+	                break;
+	            case "unknownpid":
+	                status.unknownPid = true;
+	                break;
+	            }
+	        }
+
+		Core.Debug.consoleWrite("FU processing reponse with status: " + status);
+		for (var i in status) {
+		    Core.Debug.consoleWrite("FU status, " + i + " = " + status[i]);
+		}
+	
+	        if (this._onProgress(status)) {
+	            Core.Web.Scheduler.add(this);
+	        }
+	} else Core.Debug.consoleWrite("FU Response tag missing");
+	Core.Debug.consoleWrite("FU Sync.Monitor._processResponse exit");
     },
     
     /** @see Core.Web.Scheduler.Runnable#run */
     run: function() {
+	    Core.Debug.consoleWrite("FU Sync.Monitor.run enter");
         var url = this._monitorUrl;
+	    Core.Debug.consoleWrite("FU Runnable.run monitor url is: "+ url);
+
         if (this.cancel) {
+  	    Core.Debug.consoleWrite("FU Runnable.run cancel is set");
             url += (url.indexOf("?") == -1 ? "?" : "&") + "command=cancel";
         }
         var conn = new Core.Web.HttpConnection(url, "GET");
         conn.addResponseListener(Core.method(this, this._processResponse));
         conn.connect();
+    	Core.Debug.consoleWrite("FU Sync.Monitor.run exit");
     }
 });
 
@@ -502,10 +583,12 @@ FileTransfer.Sync.ProgressDisplay = Core.extend({
              * @param {Number} size the size of the file, in bytes
              */
             $construct: function(name, size) {
+            	Core.Debug.consoleWrite("FU Sync.ProgressDisplay.construct enter");
                 this._id = FileTransfer.Sync.ProgressDisplay.File.nextId++;
                 this.name = name;
                 this.size = size;
                 this.progress = 0;
+            	Core.Debug.consoleWrite("FU Sync.ProgressDisplay.construct exit");
             }
         }),
         
@@ -529,8 +612,10 @@ FileTransfer.Sync.ProgressDisplay = Core.extend({
          * @param {Echo.Component} component the upload select component
          */
         instantiate: function(component) {
+        	Core.Debug.consoleWrite("FU Sync.ProgressDisplay.instantiate enter");
             var impl = new this.implementation();
             impl.component = component;
+        	Core.Debug.consoleWrite("FU Sync.ProgressDisplay.instantiate exit");
             return impl;
         }
     },
@@ -579,13 +664,16 @@ FileTransfer.Sync.ProgressDisplay = Core.extend({
     },
     
     add: function(file) {
+    	Core.Debug.consoleWrite("FU Sync.ProgressDisplay.add enter");
         if (this.initialized) {
             throw new Error("Illegal attempt to add files to an initialized progress display."); 
         }
         if (!this.files) {
             this.files = [];
         }
+	    Core.Debug.consoleWrite("FU Pushing file: "+ file);
         this.files.push(file);
+    	Core.Debug.consoleWrite("FU Sync.ProgressDisplay.add exit");
     },
     
     /**
@@ -596,10 +684,13 @@ FileTransfer.Sync.ProgressDisplay = Core.extend({
      * @type Number
      */
     getTotalProgress: function() {
+    	Core.Debug.consoleWrite("FU Sync.ProgressDisplay.getTotalProgress enter");
         var progress = 0;
         for (var i = 0; i < this.files.length; ++i) {
+	    Core.Debug.consoleWrite("FU Adding progress from file: "+ i + " which is " + this.files[i].progress);
             progress += this.files[i].progress;
         }
+    	Core.Debug.consoleWrite("FU Sync.ProgressDisplay.getTotalProgress exit");
         return progress;
     },
 
@@ -610,6 +701,7 @@ FileTransfer.Sync.ProgressDisplay = Core.extend({
      *        within the progress display object for later use
      */
     init: function() {
+    	Core.Debug.consoleWrite("FU Sync.ProgressDisplay.init enter");
         if (this.intialized) {
             throw new Error("Illegal attempt to initialize a previously initialized progress display.");
         }
@@ -618,6 +710,7 @@ FileTransfer.Sync.ProgressDisplay = Core.extend({
         for (var i = 0; i < this.files.length; ++i) {
             this.totalSize += this.files[i].size;
         }
+    	Core.Debug.consoleWrite("FU Sync.ProgressDisplay.init exit");
     }
 });
 
@@ -627,7 +720,9 @@ FileTransfer.Sync.ProgressDisplay = Core.extend({
 FileTransfer.Sync.DefaultProgressDisplay = Core.extend(FileTransfer.Sync.ProgressDisplay, {
     
     $load: function() {
-        FileTransfer.Sync.ProgressDisplay.implementation = this;        
+    	Core.Debug.consoleWrite("FU Sync.DefaultProgressDisplay.$load enter");
+        FileTransfer.Sync.ProgressDisplay.implementation = this;  
+    	Core.Debug.consoleWrite("FU Sync.DefaultProgressDisplay.$load exit");      
     },
     
     $static: {
@@ -668,12 +763,15 @@ FileTransfer.Sync.DefaultProgressDisplay = Core.extend(FileTransfer.Sync.Progres
     
     /** @see FileTransfer.Sync.DefaultProgressDisplay#complete */
     complete: function() {
+    	Core.Debug.consoleWrite("FU Sync.DefaultProgressDisplay.complete enter");
         this._percentComplete = 100;
         this._redraw();
+    	Core.Debug.consoleWrite("FU Sync.DefaultProgressDisplay.complete exit");
     },
     
     /** @see FileTransfer.Sync.DefaultProgressDisplay#complete */
     create: function(parentElement) {
+    	Core.Debug.consoleWrite("FU Sync.DefaultProgressDisplay.create enter");
         var style = this.style || {}, defaultStyle = FileTransfer.Sync.DefaultProgressDisplay.DEFAULT_STYLE;
         this._div = document.createElement("div");
         this._div.style.cssText = "position:relative;overflow:hidden;text-align:center;";
@@ -699,25 +797,33 @@ FileTransfer.Sync.DefaultProgressDisplay = Core.extend(FileTransfer.Sync.Progres
 
         this._text = document.createTextNode("\u00a0");
         this._textDiv.appendChild(this._text);
+    	Core.Debug.consoleWrite("FU Sync.DefaultProgressDisplay.create exit");
     },
     
     /** @see FileTransfer.Sync.DefaultProgressDisplay#complete */
     dispose: function() {
+    	Core.Debug.consoleWrite("FU Sync.DefaultProgressDisplay.dispose enter");
         this._barDiv = null;
         this._div = null;
+    	Core.Debug.consoleWrite("FU Sync.DefaultProgressDisplay.dispose exit");
     },
     
     /**
      * Redraws the current state of the component based on the value of the <code>_percentComplete</code> property
      */
     _redraw: function() {
+    	Core.Debug.consoleWrite("FU Sync.DefaultProgressDisplay._redraw enter with percentComplete " + this._percentComplete);
         this._barDiv.style.width = this._percentComplete + "%";
         this._text.nodeValue = this._percentComplete + "%";
+    	Core.Debug.consoleWrite("FU Sync.DefaultProgressDisplay._redraw exit");
     },
 
     /** @see FileTransfer.Sync.DefaultProgressDisplay#complete */
     update: function() {
-        this._percentComplete = Math.round(100 * (this.getTotalProgress() / this.totalSize));
+    	Core.Debug.consoleWrite("FU Sync.DefaultProgressDisplay.update enter");
+        this._percentComplete = Math.round((100 * this.getTotalProgress()) / this.totalSize);
+        Core.Debug.consoleWrite("FU Sync.DefaultProgressDisplay.update percentComplete is " + this._percentComplete);
         this._redraw();
+    	Core.Debug.consoleWrite("FU Sync.DefaultProgressDisplay.update exit");
     }
 });

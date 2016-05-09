@@ -90,7 +90,7 @@ implements Service {
      * @see nextapp.echo.webcontainer.Service#getVersion()
      */
     public int getVersion() {
-        return DO_NOT_CACHE;
+        return IE_HTTPS_CACHE_ONLY;
     }
 
     /**
@@ -129,7 +129,6 @@ implements Service {
         OutputStream out = conn.getOutputStream();
         DownloadProvider provider = download.getProvider();
         HttpServletResponse response = conn.getResponse();
-
         if (provider.getFileName() == null) {
             response.setHeader("Content-Disposition", "attachment");
         } else {

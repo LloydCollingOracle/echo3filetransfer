@@ -158,7 +158,7 @@ public class TestPane extends ContentPane {
      */
     public void init() {
         super.init();
-        getApplicationInstance().setFocusedComponent(testLaunchButtonsColumn.getComponent(0));
+        getContainingWindow().setFocusedComponent(testLaunchButtonsColumn.getComponent(0));
         
     };
 }

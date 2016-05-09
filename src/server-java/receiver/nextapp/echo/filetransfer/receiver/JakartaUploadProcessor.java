@@ -182,6 +182,8 @@ implements UploadProcessor {
             public void uploadCancel(UploadProcessEvent e) {
                 aborted = true;
             }
+
+            public void uploadFail(UploadProcessEvent e, Exception ex) { }
         };
         
         /**
@@ -249,10 +251,13 @@ implements UploadProcessor {
                     uploadProcess.createUpload();
                 }
                 uploadProcess.setStatus(Upload.STATUS_ERROR_OVERSIZE);
+                uploadProcess.fail(ex);
             } catch (IOException ex) {
                 uploadProcess.setStatus(Upload.STATUS_ERROR_IO);
+                uploadProcess.fail(ex);
             } catch (FileUploadException ex) {
                 uploadProcess.setStatus(Upload.STATUS_ERROR_IO);
+                uploadProcess.fail(ex);
             } finally {
                 uploadProcess.removeProcessListener(uploadProcessListener);
             }

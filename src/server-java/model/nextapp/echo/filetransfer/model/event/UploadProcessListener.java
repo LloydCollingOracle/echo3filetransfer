@@ -62,4 +62,6 @@ public interface UploadProcessListener {
      * @param e the {@link UploadProcessEvent}
      */
     public void uploadComplete(UploadProcessEvent e);
+
+    public void uploadFail(UploadProcessEvent e, Exception ex);
 }

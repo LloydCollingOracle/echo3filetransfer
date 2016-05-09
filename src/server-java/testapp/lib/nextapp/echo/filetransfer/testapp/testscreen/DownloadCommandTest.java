@@ -35,6 +35,7 @@ import java.io.OutputStream;
 import nextapp.echo.app.ApplicationInstance;
 import nextapp.echo.app.Button;
 import nextapp.echo.app.Column;
+import nextapp.echo.app.Window;
 import nextapp.echo.app.event.ActionEvent;
 import nextapp.echo.app.event.ActionListener;
 import nextapp.echo.filetransfer.app.DownloadCommand;
@@ -63,7 +64,7 @@ public class DownloadCommandTest extends Column {
     }
 
     private void doDownload() {
-        ApplicationInstance.getActive().enqueueCommand(
+        Window.getActive().enqueueCommand(
                 new DownloadCommand(new TestFileDownloadProvider()));
     }
 

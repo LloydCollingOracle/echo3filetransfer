@@ -95,9 +95,9 @@ public class InteractiveApp extends ApplicationInstance {
     public void consoleWrite(String message) {
         if (console == null) {
             console = new ConsoleWindowPane();
-            getDefaultWindow().getContent().add(console);
+            getActiveWindows()[0].getContent().add(console);
         } else if (console.getParent() == null) {
-            getDefaultWindow().getContent().add(console);
+        	getActiveWindows()[0].getContent().add(console);
         }
         if (message != null) {
             console.writeMessage(message);
@@ -127,7 +127,7 @@ public class InteractiveApp extends ApplicationInstance {
      */
     public Window init() {
         setStyleSheet(Styles.DEFAULT_STYLE_SHEET);
-        mainWindow = new Window();
+        mainWindow = new Window(this);
         mainWindow.setTitle("NextApp Echo3 File Transfer Test Application");
         mainWindow.setContent(new TestPane("UploadSelectTest"));
         return mainWindow;

@@ -20,11 +20,13 @@ FileTransfer.AbstractUploadSelect = Core.extend(Echo.Component, {
          * @type String
          */
         generateId: function() {
+        	Core.Debug.consoleWrite("FU AbstractUploadSelect.generateId enter");
             var out = "", i = 0, random;
             for (i = 0; i < 16; ++i) {
                 random = (Math.round(Math.random() * 0x10000)).toString(16);
                 out += "0000".substring(random.length) + random;
             }
+        	Core.Debug.consoleWrite("FU AbstractUploadSelect.generateId exit");
             return out;
         }
     },
@@ -47,8 +49,14 @@ FileTransfer.AbstractUploadSelect = Core.extend(Echo.Component, {
      * Constructor.
      */
     $construct: function(data) {
+    	Core.Debug.consoleWrite("FU AbstractUploadSelect.$construct enter");
         this.processId = FileTransfer.AbstractUploadSelect.generateId();
+	    Core.Debug.consoleWrite("FU Application.UploadSelect.AbstractUploadSelect.construct Process id is " + this.processId);
+		for (var i in data) {
+		    Core.Debug.consoleWrite("FU data, " + i + " = " + data[i]);
+		}
         Echo.Component.call(this, data);
+    	Core.Debug.consoleWrite("FU AbstractUploadSelect.$construct exit");
     },
     
     /**
@@ -57,11 +65,17 @@ FileTransfer.AbstractUploadSelect = Core.extend(Echo.Component, {
      * Sets sending state to false.
      */
     cancel: function() {
+    	Core.Debug.consoleWrite("FU AbstractUploadSelect.cancel enter");
+	    Core.Debug.consoleWrite("FU Cancel called for process " + this.processId);
         if (!this.sending) {
+	    Core.Debug.consoleWrite("FU Not sending uploadCancel event as sending is false");
+    	Core.Debug.consoleWrite("FU AbstractUploadSelect.cancel exit");
             return;
         }
         this.sending = false;
+	    Core.Debug.consoleWrite("FU firing uploadCancel event");
         this.fireEvent({ source: this, type: "uploadCancel" });
+    	Core.Debug.consoleWrite("FU AbstractUploadSelect.cancel exit");
     },
     
     /**
@@ -69,12 +83,18 @@ FileTransfer.AbstractUploadSelect = Core.extend(Echo.Component, {
      * Performs no operation if an upload sending is not in progress.
      * Sets sending state to false.
      */
-    complete: function() { 
+    complete: function() {
+    	Core.Debug.consoleWrite("FU AbstractUploadSelect.complete enter");
+	    Core.Debug.consoleWrite("FU Completed " + this.processId);
         if (!this.sending) {
+	    Core.Debug.consoleWrite("FU Not sending uploadComplete event as sending is false");
+    	Core.Debug.consoleWrite("FU AbstractUploadSelect.complete exit");
             return;
         }
         this.sending = false;
+	    Core.Debug.consoleWrite("FU firing uploadComplete event");
         this.fireEvent({ source: this, type: "uploadComplete", data: this.processId });
+    	Core.Debug.consoleWrite("FU AbstractUploadSelect.complete exit");
     },
     
     /**
@@ -82,10 +102,13 @@ FileTransfer.AbstractUploadSelect = Core.extend(Echo.Component, {
      * If the property <code>autoSend</code> is set, the <code>send()</code> method will be subsequently invoked. 
      */
     ready: function() {
+    	Core.Debug.consoleWrite("FU AbstractUploadSelect.ready enter");
+	    Core.Debug.consoleWrite("FU Ready : " + this.processId + " firing uploadReady");
         this.fireEvent({ source: this, type: "uploadReady" });
         if (this.render("autoSend", true)) {
             this.send();
         }
+    	Core.Debug.consoleWrite("FU AbstractUploadSelect.ready exit");
     },
     
     /**
